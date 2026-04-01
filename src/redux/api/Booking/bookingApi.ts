@@ -1,7 +1,5 @@
 import { baseApi } from "@/src/redux/api/baseApi";
 
-
-
 const adsPostApi = baseApi.injectEndpoints({
 	endpoints: (build) => ({
 		createBooking: build.mutation({
