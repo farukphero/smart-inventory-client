@@ -4,11 +4,11 @@
 import { useState } from 'react'
 
 import { Plus, Search, Filter, ClipboardList, Sidebar } from 'lucide-react'
-import { Header } from "@/src/Components/Header"
-import { CreateOrderModal } from "@/src/Components/orders/CreateOrderModal"
 import { OrderCard } from "@/src/Components/orders/OrderCard"
 import { mockOrders } from "@/src/libs/mockData"
 import { DashboardSidebar } from "@/src/Components/Sidebar"
+import { Header } from "@/src/Components/Header"
+import { OrderModal } from "@/src/Components/orders/CreateOrderModal"
 
 export default function OrdersPage() {
 	const [ orders, setOrders ] = useState(mockOrders)
@@ -102,10 +102,10 @@ export default function OrdersPage() {
 					)}
 
 					{/* Create Order Modal */}
-					<CreateOrderModal
+					<OrderModal
 						isOpen={showCreateModal}
 						onClose={() => setShowCreateModal(false)}
-						onOrderCreated={handleCreateOrder}
+						product={[]}
 					/>
 				</main>
 			</div>
