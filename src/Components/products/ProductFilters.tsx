@@ -1,6 +1,5 @@
-// components/products/ProductFilters.tsx
-'use client'
 
+'use client'
 import { Category } from "@/src/types"
 import { Search, Filter, X } from 'lucide-react'
 
@@ -37,17 +36,6 @@ export function ProductFilters({
 						className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all"
 					/>
 				</div>
-				<button
-					onClick={onToggleFilters}
-					className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all ${showFilters ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-						}`}
-				>
-					<Filter className="w-4 h-4" />
-					<span className="text-sm font-medium">Filters</span>
-					{selectedCategory && (
-						<span className="ml-1 w-5 h-5 rounded-full bg-white/20 text-xs flex items-center justify-center">1</span>
-					)}
-				</button>
 				{(searchTerm || selectedCategory) && (
 					<button
 						onClick={() => {

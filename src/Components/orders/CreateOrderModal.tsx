@@ -9,10 +9,11 @@ import { mockProducts } from "@/src/libs/mockData"
 interface CreateOrderModalProps {
 	isOpen: boolean
 	onClose: () => void
-	onOrderCreated: (order: any) => void
+	// onOrderCreated: (order: any) => void
+	product?: any; // optional product to pre-fill
 }
 
-export function CreateOrderModal({ isOpen, onClose, onOrderCreated }: CreateOrderModalProps) {
+export function OrderModal({ isOpen, onClose, product }: CreateOrderModalProps) {
 	const [ customerName, setCustomerName ] = useState('')
 	const [ customerEmail, setCustomerEmail ] = useState('')
 	const [ customerPhone, setCustomerPhone ] = useState('')
@@ -67,7 +68,7 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }: CreateOrde
 			updatedAt: new Date(),
 		}
 
-		onOrderCreated(newOrder)
+		// onOrderCreated(newOrder)
 		onClose()
 		// Reset form
 		setCustomerName('')
@@ -77,6 +78,9 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }: CreateOrde
 	}
 
 	if (!isOpen) return null
+
+
+	console.log('Selected product for order:', product) // Debug log to check the received product
 
 	return (
 		<div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">

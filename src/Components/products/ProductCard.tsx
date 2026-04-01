@@ -1,88 +1,129 @@
-// components/products/ProductCard.tsx
-'use client'
-
-
-import { Product } from "@/src/types"
-import { Edit2, Trash2, TrendingDown, CheckCircle } from 'lucide-react'
+import { ConfirmModal } from "@/src/Components/UI/DeleteConfirmModal";
+import { ShoppingCart, Edit, Trash2, Package, Hash } from 'lucide-react';
+import { useState } from 'react';
 
 interface ProductCardProps {
-	product: Product
-	onEdit?: () => void
-	onDelete?: () => void
+	product: any;
+	onEdit?: () => void;
+	onDelete?: () => void;        // this will be called only after confirmation
+	onOrder?: () => void;
 }
 
-const statusColors = {
-	Active: 'bg-green-100 text-green-800',
-	'Low Stock': 'bg-yellow-100 text-yellow-800',
-	'Out of Stock': 'bg-red-100 text-red-800',
-}
+export function ProductCard({ product, onEdit, onDelete, onOrder }: ProductCardProps) {
+	const [ showDeleteModal, setShowDeleteModal ] = useState(false);
 
-export function ProductCard({ product, onEdit, onDelete }: ProductCardProps) {
-	const stockPercentage = (product.stockQuantity / product.minStockThreshold) * 100
+	const handleDeleteClick = () => {
+		setShowDeleteModal(true);
+	};
+
+	const handleConfirmDelete = () => {
+		if (onDelete) onDelete();
+	};
 
 	return (
-		<div className="group bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
-			<div className="p-5">
-				{/* Header */}
-				<div className="flex justify-between items-start mb-3">
+		<>
+			<div className="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100">
+				{/* Top bar: subtle icon + status */}
+				<div className="px-4 pt-4 pb-2 flex items-start justify-between">
+					<div className="flex items-center gap-2 text-gray-500">
+						<Package className="w-5 h-5" />
+						{product.sku && (
+							<div className="flex items-center gap-1 text-xs text-gray-400">
+								<Hash className="w-3 h-3" />
+								<span>{product.sku}</span>
+							</div>
+						)}
+					</div>
+					<span
+						className={`px-2 py-1 text-xs rounded-full font-medium ${product.status === 'ACTIVE'
+							? 'bg-green-100 text-green-700'
+							: 'bg-red-100 text-red-700'
+							}`}
+					>
+						{product.status === 'ACTIVE' ? 'In Stock' : 'Out of Stock'}
+					</span>
+				</div>
+
+				{/* Product Info */}
+				<div className="p-4 pt-0 space-y-2">
 					<div>
-						<h3 className="font-semibold text-gray-900 text-lg">{product.name}</h3>
-						<p className="text-sm text-gray-500">{product.category}</p>
+						<h3 className="font-semibold text-gray-900 line-clamp-1">
+							{product.productName}
+						</h3>
+						<p className="text-sm text-gray-500 mt-0.5 line-clamp-1 truncate">
+							{product.categoryId?.categoryName || 'Uncategorized'}
+						</p>
+						{product.description && (
+							<p className="text-sm text-gray-500 mt-2 line-clamp-2">
+								{product.description}
+							</p>
+						)}
 					</div>
-					<div className={`px-2.5 py-1 rounded-full text-xs font-medium ${statusColors[ product.status ]}`}>
-						{product.status === 'Low Stock' && <TrendingDown className="w-3 h-3 inline mr-1" />}
-						{product.status === 'Active' && <CheckCircle className="w-3 h-3 inline mr-1" />}
-						{product.status}
-					</div>
-				</div>
 
-				{/* Price */}
-				<div className="mb-4">
-					<p className="text-2xl font-bold text-gray-900">${product.price.toFixed(2)}</p>
-					<p className="text-xs text-gray-400 mt-1">SKU: {product.sku}</p>
-				</div>
-
-				{/* Stock */}
-				<div className="mb-4">
-					<div className="flex justify-between text-sm mb-1.5">
-						<span className="text-gray-600">Stock Level</span>
-						<span className={`font-medium ${product.stockQuantity <= product.minStockThreshold ? 'text-red-600' : 'text-gray-900'}`}>
-							{product.stockQuantity} / {product.minStockThreshold}
+					<div className="flex items-baseline gap-1 pt-1">
+						<span className="text-2xl font-bold text-gray-900">
+							${product.price.toFixed(2)}
 						</span>
+						{product.stockQuantity > 0 && (
+							<span className="text-sm text-gray-500">/ unit</span>
+						)}
 					</div>
-					<div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
-						<div
-							className={`h-2 rounded-full transition-all duration-500 ${product.stockQuantity <= product.minStockThreshold ? 'bg-gradient-to-r from-red-500 to-orange-500' : 'bg-gradient-to-r from-green-500 to-emerald-500'
-								}`}
-							style={{ width: `${Math.min(stockPercentage, 100)}%` }}
-						/>
+
+					{product.stockQuantity !== undefined && (
+						<div className="text-xs text-gray-500">
+							{product.stockQuantity > 0
+								? `${product.stockQuantity} units available`
+								: 'Out of stock'}
+						</div>
+					)}
+
+					{/* Action buttons */}
+					<div className="flex justify-between items-center pt-2">
+						<div className="flex gap-2">
+							{onEdit && (
+								<button
+									onClick={onEdit}
+									className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition cursor-pointer"
+									aria-label="Edit product"
+								>
+									<Edit className="w-4 h-4" />
+								</button>
+							)}
+							{onDelete && (
+								<button
+									onClick={handleDeleteClick}
+									className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition cursor-pointer"
+									aria-label="Delete product"
+								>
+									<Trash2 className="w-4 h-4" />
+								</button>
+							)}
+						</div>
+
+						{onOrder && (
+							<button
+								onClick={onOrder}
+								className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-green-600 to-emerald-600 text-white text-sm rounded-lg hover:shadow-md transition-all transform hover:scale-105"
+							>
+								<ShoppingCart className="w-4 h-4" />
+								<span>Order Now</span>
+							</button>
+						)}
 					</div>
 				</div>
-
-				{/* Actions */}
-				{(onEdit || onDelete) && (
-					<div className="flex gap-2 pt-3 border-t border-gray-100">
-						{onEdit && (
-							<button
-								onClick={onEdit}
-								className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-indigo-600 hover:bg-indigo-50 rounded-xl transition-colors"
-							>
-								<Edit2 className="w-4 h-4" />
-								<span className="text-sm font-medium">Edit</span>
-							</button>
-						)}
-						{onDelete && (
-							<button
-								onClick={onDelete}
-								className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-red-600 hover:bg-red-50 rounded-xl transition-colors"
-							>
-								<Trash2 className="w-4 h-4" />
-								<span className="text-sm font-medium">Delete</span>
-							</button>
-						)}
-					</div>
-				)}
 			</div>
-		</div>
-	)
+
+			{/* Delete Confirmation Modal */}
+			<ConfirmModal
+				isOpen={showDeleteModal}
+				onClose={() => setShowDeleteModal(false)}
+				onConfirm={handleConfirmDelete}
+				title="Delete Product"
+				message={`Are you sure you want to delete "${product.productName}"? This action cannot be undone.`}
+				confirmText="Delete"
+				cancelText="Cancel"
+				variant="danger"
+			/>
+		</>
+	);
 }

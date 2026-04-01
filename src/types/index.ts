@@ -17,7 +17,7 @@ export interface Category {
 
 export interface Product {
   id: string;
-  name: string;
+  productName: string;
   category: string;
   categoryId: string;
   price: number;
