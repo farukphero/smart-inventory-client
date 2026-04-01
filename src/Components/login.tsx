@@ -66,6 +66,7 @@ export default function AuthForm() {
 	const onSignIn = async (data: FormValues) => {
 		try {
 			const response = await signIn(data).unwrap();
+			router.push("/dashboard");
 			if (response.success) {
 				toast.success("Welcome back! Login successful 🎉");
 				router.push("/dashboard");
@@ -279,7 +280,7 @@ export default function AuthForm() {
 				>
 					<h2 className="text-4xl font-bold text-gray-900">Welcome back</h2>
 					<p className="text-gray-500 mt-2 mb-8">
-						Sign in to continue your journey 🚀
+						Sign in to continue your journeyasasasa 🚀
 					</p>
 
 					<div className="space-y-4">
