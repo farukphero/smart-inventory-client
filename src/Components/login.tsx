@@ -66,7 +66,7 @@ export default function AuthForm() {
 	const onSignIn = async (data: FormValues) => {
 		try {
 			const response = await signIn(data).unwrap();
-			router.push("/dashboard");
+
 			if (response.success) {
 				toast.success("Welcome back! Login successful 🎉");
 				router.push("/dashboard");
