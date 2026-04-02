@@ -19,6 +19,18 @@ export async function POST(request: NextRequest) {
 
   const data = await res.json();
 
+	if (!res.ok || !data?.data?.accessToken) {
+    // ✅ Refresh fail হলে cookie clear করো
+    const response = NextResponse.json(
+      { message: "Session expired" },
+      { status: 401 }
+    );
+    response.cookies.delete("token");
+    response.cookies.delete("refreshToken");
+    return response;
+  }
+
+
   if (!data?.data?.accessToken) {
     return NextResponse.json(data, { status: 401 });
   }
@@ -27,12 +39,24 @@ export async function POST(request: NextRequest) {
 
   // ✅ token cookie update করো
   response.cookies.set("token", data.data.accessToken, {
-    httpOnly: false,
+     httpOnly: true,     // ✅ JS access করতে পারবে না
     secure: true,
-    sameSite: "lax",
-    maxAge: 60 * 60,
+    sameSite: "strict", // ✅ CSRF protection
+    maxAge: 60 * 60,    // ✅ 1 hour
     path: "/",
   });
+
+	// ✅ নতুন refreshToken আসলে সেটাও update করো
+  if (data?.data?.refreshToken) {
+    response.cookies.set("refreshToken", data.data.refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+      maxAge: 60 * 60 * 24 * 30,
+      path: "/api/auth",
+    });
+  }
+
 
   return response;
 }
