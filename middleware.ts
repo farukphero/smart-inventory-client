@@ -1,41 +1,24 @@
-import { cookies } from "next/headers"
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
-  // token cookie অথবা session cookie যেকোনো একটা থাকলেই হবে
   const token = request.cookies.get('token')?.value
-  const session = request.cookies.get('connect.sid')?.value
+  const isAuthenticated = !!token
 
-  const isAuthenticated = !!(token || session)
+  const { pathname } = request.nextUrl
 
-   // সব cookies দেখো
-  console.log('All cookies:', request.cookies.getAll())
-  console.log('token:', request.cookies.get('token')?.value)
-  console.log('connect.sid:', request.cookies.get('connect.sid')?.value)
+  const isAuthPage = pathname.startsWith('/login') || pathname.startsWith('/signup')
+  const isPublicApi = pathname.startsWith('/api/auth')
+  const isNextInternal = pathname.startsWith('/_next')
+  const isApiRoute = pathname.startsWith('/api')
 
-// const cookies = request.cookies.getAll();
-//   const value = cookies[0]?.value;
-
-// console.log({value});
-//   const token2 = request.cookies.get('_vercel_jwt')?.value;
-
-// console.log('_vercel_jwttoken2:', token2);
-
-  const isAuthPage = request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/signup')
-
- console.log('isAuthenticated:', isAuthenticated)
- console.log('isAuthPage:', isAuthPage)
-
-  const isApiRoute = request.nextUrl.pathname.startsWith('/api')
-  const isPublicApi = request.nextUrl.pathname.startsWith('/api/auth')
-  const isNextInternal = request.nextUrl.pathname.startsWith('/_next')
+  if (isNextInternal || isPublicApi) return NextResponse.next()
 
   if (isAuthenticated && isAuthPage) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
-  if (!isAuthenticated && !isAuthPage && !isPublicApi && !isNextInternal) {
+  if (!isAuthenticated && !isAuthPage) {
     if (isApiRoute) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -48,3 +31,23 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
 }
+// ```
+
+// ---
+
+// ## Final Flow
+// ```
+// Login
+//   ↓
+// Backend → { accessToken, refreshToken } body তে পাঠায়
+// Next.js → Vercel domain এ দুইটা cookie set করে
+//   ├── token (accessToken) - middleware পড়ে
+//   └── refreshToken (httpOnly) - refresh এ ব্যবহার হয়
+//   ↓
+// Middleware → token পায় ✅ → /dashboard ✅
+
+// Token Expire
+//   ↓
+// Next.js proxy → Vercel domain এর refreshToken নেয় ✅
+// Backend → নতুন accessToken দেয়
+// token cookie update হয় ✅

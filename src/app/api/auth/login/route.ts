@@ -9,7 +9,6 @@ export async function POST(request: NextRequest) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
-      credentials: "include",
     }
   );
 
@@ -21,19 +20,24 @@ export async function POST(request: NextRequest) {
 
   const response = NextResponse.json(data);
 
-  // ✅ Backend এর cookie গুলো forward করো (refreshToken এর জন্য)
-//   const backendCookies = res.headers.get("set-cookie");
-//   if (backendCookies) {
-//     response.headers.set("set-cookie", backendCookies);
-//   }
-
-  // ✅ আলাদাভাবে শুধু accessToken টা middleware এর জন্য set করো
-  if (data?.data?.refreshToken) {
-    response.cookies.set("token", data.data.refreshToken, {
-      httpOnly: false,   // middleware + JS পড়তে পারবে
+  // ✅ accessToken → middleware পড়বে
+  if (data?.data?.accessToken) {
+    response.cookies.set("token", data.data.accessToken, {
+      httpOnly: false,
       secure: true,
       sameSite: "lax",
-      maxAge: 60,   // ← accessToken এর মেয়াদ অনুযায়ী দাও (১ ঘণ্টা)
+      maxAge: 60 * 60,        // 1 hour
+      path: "/",
+    });
+  }
+
+  // ✅ refreshToken → Vercel domain এ save করো
+  if (data?.data?.refreshToken) {
+    response.cookies.set("refreshToken", data.data.refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 7,  // 7 days
       path: "/",
     });
   }

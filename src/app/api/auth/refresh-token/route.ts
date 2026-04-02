@@ -13,8 +13,7 @@ export async function POST(request: NextRequest) {
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      // ✅ body তে পাঠাও
-      body: JSON.stringify({ refreshToken }),
+      body: JSON.stringify({ refreshToken }),  // ✅ body তে পাঠাও
     }
   );
 
@@ -26,7 +25,7 @@ export async function POST(request: NextRequest) {
 
   const response = NextResponse.json(data);
 
-  // ✅ নতুন accessToken cookie update করো
+  // ✅ token cookie update করো
   response.cookies.set("token", data.data.accessToken, {
     httpOnly: false,
     secure: true,
