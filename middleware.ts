@@ -4,8 +4,10 @@ import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
   const token = request.cookies.get('token')?.value
+
+  console.log('Middleware executed for:',token, request)
   const isAuthPage = request.nextUrl.pathname.startsWith('/login') ||
-                     request.nextUrl.pathname.startsWith('/signup')
+                      request.nextUrl.pathname.startsWith('/signup')
   const isApiRoute = request.nextUrl.pathname.startsWith('/api')
   const isPublicApi = request.nextUrl.pathname.startsWith('/api/auth')
 
