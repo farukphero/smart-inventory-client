@@ -8,15 +8,16 @@ export const handleLogout = async (
   router?: any,
 ): Promise<void> => {
   try {
-  const res =  await fetch(`/api/auth/logout`, {
+  const res =  await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}/auth/logout`, {
       method: "POST",
       credentials: "include",
   });
-        if (!res.ok) {
-		throw new Error(`Logout API failed with status ${res.status}`);}
-                    } catch (error) {
+if (!res.ok) {
+		throw new Error(`Logout API failed with status ${res.status}`);
+	}
+} catch (error) {
 	  // API fail হলেও logout continue করবে
-	toast.error("Logout failed. Please try again.");
+	  toast.error("Logout failed. Please try again.");
     console.error("Logout API error:", error);
   } finally {
     // ✅ সবসময় এগুলো run হবে, API fail হলেও
