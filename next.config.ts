@@ -1,14 +1,9 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  /* config options here */
-  async headers() {
+const nextConfig = {
+  async rewrites() {
     return [
       {
         source: "/api/:path*",
-        headers: [
-          { key: "Access-Control-Allow-Credentials", value: "true" },
-        ],
+        destination: "https://smart-inventory-server-gamma.vercel.app/api/v1/:path*",
       },
     ];
   },
