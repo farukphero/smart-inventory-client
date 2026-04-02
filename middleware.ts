@@ -1,3 +1,4 @@
+import { cookies } from "next/headers"
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
@@ -13,6 +14,14 @@ export function middleware(request: NextRequest) {
   console.log('All cookies:', request.cookies.getAll())
   console.log('token:', request.cookies.get('token')?.value)
   console.log('connect.sid:', request.cookies.get('connect.sid')?.value)
+
+const cookies = request.cookies.getAll();
+  const value = cookies[0]?.value;
+
+console.log({value});
+  const token2 = request.cookies.get('_vercel_jwt')?.value;
+
+console.log('_vercel_jwttoken2:', token2);
 
   const isAuthPage = request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/signup')
 
