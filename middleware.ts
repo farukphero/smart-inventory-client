@@ -9,6 +9,7 @@ export function middleware(request: NextRequest) {
   const isAuthenticated = !!(token || session)
 
    // সব cookies দেখো
+  console.log('Request', request)
   console.log('All cookies:', request.cookies.getAll())
   console.log('token:', request.cookies.get('token')?.value)
   console.log('connect.sid:', request.cookies.get('connect.sid')?.value)
