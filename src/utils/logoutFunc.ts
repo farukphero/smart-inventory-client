@@ -8,7 +8,7 @@ export const handleLogout = async (
   router?: any,
 ): Promise<void> => {
   try {
-  const res =  await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}/auth/logout`, {
+  const res =  await fetch(`/api/auth/logout`, {
       method: "POST",
       credentials: "include",
   });

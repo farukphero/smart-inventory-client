@@ -13,14 +13,25 @@ const userApi = baseApi.injectEndpoints({
 			invalidatesTags: ["user"],
 		}),
 		login: build.mutation({
-			query: (info) => ({
-				url: "/auth/login",
-				method: "POST",
-				body: info,
-				// credentials: "include",
-			}),
-			invalidatesTags: ["user"],
-		}),
+  async queryFn(info, _api, _extraOptions) {
+	// ✅ সরাসরি Next.js proxy call করো
+	const res = await fetch("/api/auth/login", {
+	  method: "POST",
+	  headers: { "Content-Type": "application/json" },
+	  credentials: "include",
+	  body: JSON.stringify(info),
+	});
+
+	const data = await res.json();
+
+	if (!res.ok) {
+	  return { error: { status: res.status, data } as any };
+	}
+
+	return { data };
+  },
+  invalidatesTags: ["user"],
+}),
 
         getSingleUser: build.query({
 			query: () => ({

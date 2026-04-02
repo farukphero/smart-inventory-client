@@ -24,7 +24,11 @@ const baseQuery = fetchBaseQuery({
 		return headers;
 	},
 });
-
+// ✅ Next.js proxy এর জন্য আলাদা
+const nextBaseQuery = fetchBaseQuery({
+  baseUrl: `/`,   // Vercel domain
+  credentials: "include",
+});
 const baseQueryWithRefreshToken: BaseQueryFn<
 	FetchArgs,
 	BaseQueryApi,
@@ -34,7 +38,7 @@ const baseQueryWithRefreshToken: BaseQueryFn<
 	if (result?.error?.status === 500) {
 		try {
 			const res = await fetch(
-				`${process.env.NEXT_PUBLIC_BASE_API_URL}/auth/refresh-token`,
+				`/api/auth/refresh-token`,
 				{
 					method: "POST",
 					credentials: "include",
