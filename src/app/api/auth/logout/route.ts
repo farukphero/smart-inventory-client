@@ -8,8 +8,26 @@ export async function POST(request: NextRequest) {
   const response = NextResponse.json({ success: true });
 
   // ✅ দুইটা cookie ই clear করো
-  response.cookies.delete("token");
-  response.cookies.delete("refreshToken");
+//   response.cookies.delete("token");
+//   response.cookies.delete("refreshToken");
+
+	 // ✅ দুইটা cookie ই clear করো
+  response.cookies.set("token", "", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "strict",
+    maxAge: 0,        // ✅ delete এর চেয়ে maxAge: 0 বেশি reliable
+    path: "/",
+  });
+
+  response.cookies.set("refreshToken", "", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "strict",
+    maxAge: 0,
+    path: "/api/auth",  // ✅ set এর সময় যে path ছিল সেটা দিতে হবে
+  });
+
 
   return response;
 }
