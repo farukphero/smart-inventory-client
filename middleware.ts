@@ -8,7 +8,16 @@ export function middleware(request: NextRequest) {
 
   const isAuthenticated = !!(token || session)
 
+   // সব cookies দেখো
+  console.log('All cookies:', request.cookies.getAll())
+  console.log('token:', request.cookies.get('token')?.value)
+  console.log('connect.sid:', request.cookies.get('connect.sid')?.value)
+
   const isAuthPage = request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/signup')
+
+ console.log('isAuthenticated:', isAuthenticated)
+ console.log('isAuthPage:', isAuthPage)
+
   const isApiRoute = request.nextUrl.pathname.startsWith('/api')
   const isPublicApi = request.nextUrl.pathname.startsWith('/api/auth')
   const isNextInternal = request.nextUrl.pathname.startsWith('/_next')
