@@ -1,4 +1,5 @@
 import { baseApi } from "@/src/redux/api/baseApi";
+import { BaseQueryApi, QueryReturnValue } from "@reduxjs/toolkit/query";
 
 
 
@@ -13,14 +14,37 @@ const userApi = baseApi.injectEndpoints({
 			invalidatesTags: ["user"],
 		}),
 		login: build.mutation({
-			query: (info) => ({
-				url: "/auth/login",
-				method: "POST",
-				body: info,
-				// credentials: "include",
-			}),
-			invalidatesTags: ["user"],
-		}),
+  queryFn: async (
+    info: any,
+    api: BaseQueryApi,
+    _extraOptions: any,
+    _baseQuery: any
+  ): Promise<QueryReturnValue<any, any, any>> => {
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(info),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        return { error: { status: res.status, data } };
+      }
+
+    //   if (data?.data?.accessToken) {
+    //     api.dispatch(setUser({ token: data.data.accessToken }));
+    //   }
+
+      return { data };
+    } catch (error) {
+      return { error: { status: "FETCH_ERROR", error: String(error) } };
+    }
+  },
+  invalidatesTags: ["user"],
+}),
 
         getSingleUser: build.query({
 			query: () => ({
